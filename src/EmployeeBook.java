@@ -1,7 +1,6 @@
 public class EmployeeBook {
     private final Employee[] employees;
     public int size;
-    public static int counterId;
 
     public Employee[] getEmployees() {
         return employees;
@@ -39,7 +38,7 @@ public class EmployeeBook {
     public void printAllEmployee() {
         System.out.println("Наши сотрудники:");
         for (int i = 0; i < size; i++) {
-            System.out.println(getEmployees()[i]);
+            System.out.println(employees[i]);
         }
     }
 
@@ -64,49 +63,25 @@ public class EmployeeBook {
     }
 
     //Найти сотрудника с минимальной зарплатой.
-    public int getMinSalaryId() { //Дополнительный метод для получения id сотрудника
-        double minSalary = employees[0].getSalary();
-        int id = 0;
-        for (int i = 0; i < size - 1; i++) {
-            if (minSalary > employees[i + 1].getSalary()) {
-                minSalary = employees[i + 1].getSalary();
-                id = employees[i + 1].getId();
+    public Employee findMinSalary() {
+        Employee minSalaryemployee = employees[0];
+        for (int i = 1; i < size; i++) {
+            if (minSalaryemployee.getSalary() > employees[i].getSalary()) {
+                minSalaryemployee = employees[i];
             }
         }
-        return id;
-    }
-
-    public void findMinSalary() {
-        for (int i = 0; i < size; i++) {
-            if (getMinSalaryId() == employees[i].getId()) {
-                System.out.printf("Минимальная зарплата у сотрудника: %s из отдела %s и равна %.2f%n", employees[i].getName(),
-                        employees[i].getDepartment(), employees[i].getSalary());
-                return;
-            }
-        }
+        return minSalaryemployee;
     }
 
     //Найти сотрудника с максимальной зарплатой.
-    public int getMaxSalaryId() { //Дополнительный метод для получения id сотрудника
-        double maxSalary = employees[0].getSalary();
-        int id = 0;
-        for (int i = 0; i < size - 1; i++) {
-            if (maxSalary < employees[i + 1].getSalary()) {
-                maxSalary = employees[i + 1].getSalary();
-                id = employees[i + 1].getId();
+    public Employee findMaxSalary() {
+        Employee maxSalaryemployee = employees[0];
+        for (int i = 1; i < size; i++) {
+            if (maxSalaryemployee.getSalary() < employees[i].getSalary()) {
+                maxSalaryemployee = employees[i];
             }
         }
-        return id;
-    }
-
-    public void findMaxSalary() {
-        for (int i = 0; i < size; i++) {
-            if (getMaxSalaryId() == employees[i].getId()) {
-                System.out.printf("Максимальная зарплата у сотрудника: %s из отдела %s и равна %.2f%n", employees[i].getName(),
-                        employees[i].getDepartment(), employees[i].getSalary());
-                return;
-            }
-        }
+        return maxSalaryemployee;
     }
 
     //Подсчитать среднее значение зарплат
@@ -129,54 +104,37 @@ public class EmployeeBook {
     }
 
     //Получить в качестве параметра номер отдела
-    //Сотрудника с минимальной зарплатой.
-    public void findMinSalaryInDepartment(int department) {
-        double minSalary = Integer.MAX_VALUE;
-        int id = -1;
+    //Сотрудника с минимальной зарплатой в отделе.
+    public Employee findMinSalaryInDepartment(int department) {
+        Employee minSalaryemployee = null;
         for (int i = 0; i < size; i++) {
-            if (department == employees[i].getDepartment() && minSalary > employees[i].getSalary()) {
-                minSalary = employees[i].getSalary();
-                id = i;
+            if (department == employees[i].getDepartment() &&
+                    (minSalaryemployee == null || minSalaryemployee.getSalary() < employees[i].getSalary())) {
+                minSalaryemployee = employees[i];
             }
         }
-        if (id == -1) {
-            System.out.println("В отделе нет сотрудников");
-            return;
-        }
-        System.out.printf("Минимальная зарплата в отделе %s у сотрудника %s и равна: %.2f%n", department,
-                employees[id].getName(), employees[id].getSalary());
+        return minSalaryemployee;
     }
 
-    //Сотрудника с максимальной зарплатой.
-    public void findMaxSalaryInDepartment(int department) {
-        double maxSalary = 0;
-        int id = -1;
+    //Сотрудника с максимальной зарплатой в отделе.
+    public Employee findMaxSalaryInDepartment(int department) {
+        Employee maxSalaryemployee = null;
         for (int i = 0; i < size; i++) {
-            if (department == employees[i].getDepartment() && maxSalary < employees[i].getSalary()) {
-                maxSalary = employees[i].getSalary();
-                id = i;
+            if (department == employees[i].getDepartment() &&
+                    (maxSalaryemployee == null || maxSalaryemployee.getSalary() < employees[i].getSalary())) {
+                maxSalaryemployee = employees[i];
             }
         }
-        if (id == -1) {
-            System.out.println("В отделе нет сотрудников");
-            return;
-        }
-        System.out.printf("Максимальная зарплата в отделе %s у сотрудника %s и равна: %.2f%n", department,
-                employees[id].getName(), employees[id].getSalary());
+        return maxSalaryemployee;
     }
 
     //Сумму затрат на зарплату по отделу.
     public double getSumSalaryInDepartment(int department) {
         double sum = 0;
-        int check = -1;
         for (int i = 0; i < size; i++) {
             if (department == employees[i].getDepartment()) {
                 sum += employees[i].getSalary();
-                check = i;
             }
-        }
-        if (check == -1) {
-            return 0;
         }
         return sum;
     }
@@ -184,14 +142,12 @@ public class EmployeeBook {
     //Среднюю зарплату по отделу
     public double getAverageSalaryInDepartment(int department) {
         int employee = 0;
-        int check = -1;
         for (int i = 0; i < size; i++) {
             if (department == employees[i].getDepartment()) {
                 employee++;
-                check++;
             }
         }
-        if (check == -1) {
+        if (employee == 0) {
             return 0;
         }
         return getSumSalaryInDepartment(department) / employee;
